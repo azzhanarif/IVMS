@@ -93,7 +93,6 @@ void removeItem(int& itemCount) //Mufleh Wrote this function
 
 
 
-
     int menu()
 {
     int choice;
@@ -129,6 +128,68 @@ void removeItem(int& itemCount) //Mufleh Wrote this function
 
     return choice;
 } 
+	void editItem(int itemCount)          //Mufleh Wrote this function
+    {
+        cout << "****************************************** EDITING ITEMS ******************************************" << endl;
+        
+        if (itemCount == 0)
+        {
+            cout << "Inventory is empty! Add items first.\n";
+            return;
+        }
+        int tempID;
+        bool correctid;
+        
+        do
+        {
+            correctid = true;
+            cout << "Enter the ID of the item you want to edit: ";
+            if (!(cin >> tempID))
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "Invalid Input! ID must be a number.\n";
+                correctid = false;
+            }
+            else if (tempID < 0)
+            {
+                cout << "Invalid Input! ID cannot be negative.\n";
+                correctid = false;
+            }
+        } while (!correctid);
+
+        int index = -1;
+        for (int i = 0; i < itemCount; i++)
+        {
+            if (inventory[i].id == tempID)
+            {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1)
+        {
+            cout << "Item with ID " << tempID << " not found!\n";
+            return;
+        }
+        cout << "\nCurrent Details:\n";
+        cout << "Name: " << inventory[index].name << endl;
+        cout << "Quantity: " << inventory[index].quantity << endl;
+        cout << "Price: " << inventory[index].price << endl;
+        cout << "Category: " << inventory[index].category << endl;
+        cout << "\nEnter new name: ";
+        cin.ignore();
+        getline(cin, inventory[index].name);
+        cout << "Enter new quantity: ";
+        cin >> inventory[index].quantity;
+        cout << "Enter new price: ";
+        cin >> inventory[index].price;
+        cout << "Enter new category: ";
+        cin.ignore();
+        getline(cin, inventory[index].category);
+        cout << "\nItem updated successfully!\n";
+    }
+
 
 int main()
 {
@@ -179,9 +240,9 @@ int main()
 			removeItem(itemCount);
             break;
         }
-        case 4:
+        case 3:
         {
-            cout << "Under devloped! comeback late\n";
+			editItem(itemCount);
             break;
         }
         case 5:
