@@ -49,13 +49,52 @@ void addItem(int& itemCount)
 
 }
 
-void removeItem()
+void removeItem(int& itemCount) //Mufleh Wrote this function
 {
+	cout << "***************************************** REMOVING ITEMS ******************************************" << endl;
+    if (itemCount == 0) 
+    {
+        cout << "Inventory is empty! add items to delete\n";
+        return;
+    }
+        int tempID;
+        bool correctid;
+        do
+        {
+            correctid = true;
+            cout << "Enter the id of item: ";
+            if (!(cin >> tempID))
+            {
+                cin.clear();
+                cin.ignore();
+                cout << "Invalid Input! ID must be a number\n";
+                correctid = false;
+            }
+            else if (tempID < 0)
+            {
+                cout << "Invalid Input! ID cannot be negative\n";
+                correctid = false;
+            }
+        } while (!correctid);
+        inventory[itemCount].id = tempID;
 
-}
+        for (int i = 0; i < itemCount; i++) {
+            if (inventory[i].id == tempID)
+            {
+                for (int j = i; j < itemCount - 1; j++) {
+                    inventory[j] = inventory[j + 1];
+                }
+                itemCount--;
+                cout << "Item with ID " << tempID << " removed successfully!\n";
+                return;
+            }
+        }
+    }
 
 
-int menu()
+
+
+    int menu()
 {
     int choice;
     cout << "Menu is below: \n";
@@ -137,7 +176,7 @@ int main()
         }
         case 2:
         {
-            cout << "Under devloped! comeback late\n";
+			removeItem(itemCount);
             break;
         }
         case 4:
