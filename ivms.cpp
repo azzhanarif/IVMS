@@ -15,7 +15,7 @@ struct Item {
 Item inventory[100];
 fstream productFile;
 
-bool duplicateID(int ID, int itemCount) { // made by Azhan
+bool duplicateID(int ID, int itemCount) {            // made by Azhan
 
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == ID)
@@ -26,7 +26,7 @@ bool duplicateID(int ID, int itemCount) { // made by Azhan
     return false;
 }
 
-void saveItems(int itemCount) {                       // made by Azhan
+void saveData(int itemCount) {                       // made by Azhan
 
     productFile.open("products.txt", ios::out);
     if (productFile.is_open()) {
@@ -39,6 +39,20 @@ void saveItems(int itemCount) {                       // made by Azhan
         productFile.close();
     }
 
+}
+
+void loadData(int& itemCount) {                                      // made by Azhan
+
+    productFile.open("products.txt", ios::in);
+    if (productFile.is_open()) {
+
+        
+        while (productFile >> inventory[itemCount].name >> inventory[itemCount].id >> inventory[itemCount].quantity >> inventory[itemCount].price >> inventory[itemCount].category) {
+            itemCount++;
+        }
+
+        productFile.close();
+    }
 }
 
 
@@ -111,6 +125,9 @@ void addItem(int& itemCount) // Add item function made by Azhan
     cout << "Enter category of the item: ";
     cin.ignore();
     getline(cin, inventory[itemCount].category);
+
+
+
 
     itemCount++;
 
@@ -293,6 +310,7 @@ int main()
     cout << "****************************************** INVENTORY MANAGEMENT ******************************************\n\n" << endl;
 
     int itemCount = 0;
+    loadData(itemCount);
 
     while (true)
     {
@@ -355,12 +373,13 @@ int main()
 
         }
 
-        saveItems(itemCount);
+        saveData(itemCount);
     }
 
 
 
 }
+
 
 
 
