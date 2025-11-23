@@ -13,6 +13,7 @@ struct Item {
 };
 
 Item inventory[100];
+fstream productFile;
 
 bool duplicateID(int ID, int itemCount) { // made by Azhan
 
@@ -23,6 +24,21 @@ bool duplicateID(int ID, int itemCount) { // made by Azhan
         }
     }
     return false;
+}
+
+void saveItems(int itemCount) {                       // made by Azhan
+
+    productFile.open("products.txt", ios::out);
+    if (productFile.is_open()) {
+
+        for (int i = 0; i < itemCount; i++) {
+            productFile << inventory[i].name << " " << inventory[i].id << " " << inventory[i].quantity << " " << inventory[i].price << " " << inventory[i].category << endl;
+
+        }
+
+        productFile.close();
+    }
+
 }
 
 
@@ -95,9 +111,6 @@ void addItem(int& itemCount) // Add item function made by Azhan
     cout << "Enter category of the item: ";
     cin.ignore();
     getline(cin, inventory[itemCount].category);
-
-
-
 
     itemCount++;
 
@@ -341,9 +354,16 @@ int main()
         }
 
         }
+
+        saveItems(itemCount);
     }
 
 
 
 }
+
+
+
+
+
 
