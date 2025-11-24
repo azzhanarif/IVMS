@@ -2,7 +2,6 @@
 #include<fstream>
 #include<string>
 #include<iomanip>
-#include<limits>
 using namespace std;
 struct Item {
     int id;
@@ -56,7 +55,7 @@ void loadData(int& itemCount) {                                      // made by 
 }
 
 
-void addItem(int& itemCount) // Add item function made by Azhan
+void addItem(int& itemCount)                                           // made by Azhan
 {
     cout << "****************************************** ADDING ITEMS ******************************************" << endl;
 
@@ -137,7 +136,7 @@ void addItem(int& itemCount) // Add item function made by Azhan
 
 }
 
-void removeItem(int& itemCount) //Mufleh Wrote this function
+void removeItem(int& itemCount)                                                    //Mufleh Wrote this function
 {
     cout << "***************************************** REMOVING ITEMS ******************************************" << endl;
     if (itemCount == 0)
@@ -165,7 +164,6 @@ void removeItem(int& itemCount) //Mufleh Wrote this function
         }
     } while (!correctid);
 
-    //inventory[itemCount].id = tempID;  // Mufleh, ye line fazool kee hai thats why i removed it ~Azhan
 
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == tempID)
@@ -180,7 +178,7 @@ void removeItem(int& itemCount) //Mufleh Wrote this function
     }
 }
 
-void editItem(int itemCount)          //Mufleh Wrote this function
+void editItem(int itemCount)                                                                    //Mufleh Wrote this function
 {
     cout << "****************************************** EDITING ITEMS ******************************************" << endl;
 
@@ -242,7 +240,112 @@ void editItem(int itemCount)          //Mufleh Wrote this function
     cout << "\nItem updated successfully!\n";
 }
 
-void viewItems(int itemCount) // this functoin made by Azhan
+void searchItem(int itemCount) {                                                                        // made by Azhan
+    int id;
+    int i = 0;
+    bool found = true;
+    cout << "Enter the product id: ";
+    cin >> id;
+
+    for (i = 0; i < itemCount; i++) {
+        if (inventory[i].id == id) {
+            found = true;
+            break;
+        }
+            
+    }
+
+    if (found) 
+    {
+        cout << "Item found! " << endl;
+
+        cout << "Item name: " << inventory[i].name << endl;
+        cout << "Item id: " << inventory[i].id << endl;
+        cout << "Item price: " << inventory[i].price << endl;
+        cout << "Item qty: " << inventory[i].quantity << endl;
+        cout << "Item category: " << inventory[i].category << endl;
+    
+    }
+    else {
+        cout << "Item not not found!";
+    }
+
+
+
+}
+
+void preventNegStock(int ic) {                     // made by Azhan
+
+    bool found = false;
+
+    for (int i = 0; i < ic; i++) {
+        if (inventory[i].quantity <= 5) {
+            found = true;
+            cout << inventory[i].name << " is running out of stock please refill!" << endl;
+        }
+    }
+
+    if (!found) {
+        cout << "No stock need to be refilled! " << endl;
+    }
+}
+
+
+void recordSALE(int ItemCount) {                                        // Made by Azhan
+
+    cout << "=============================== SALES Management ===============================\n" << endl;
+
+    int id;
+    int qty;
+    int i = 0;
+    int final;
+    float totalBill = 0.0;
+    while (true) {
+
+        cout << "Enter the ID of the product you want to sell: ";
+        cin >> id;
+
+        bool found = false;
+        for ( i = 0; i < ItemCount; i++) {  // This loop for determining item
+            if (inventory[i].id == id) { 
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            cout << "Item not found!" << endl;
+            continue;
+        }
+
+        cout << "Enter the quantity of the item you want to sell: ";
+        cin >> qty; // add input validator
+
+        if ((inventory[i].quantity - qty) < 0) {
+            cout << "Invalid quantity! only " << inventory[i].quantity << " " << inventory[i].name << " are available in stock" << endl;
+            continue;
+        }
+
+        inventory[i].quantity -= qty;
+
+
+        totalBill = totalBill + (qty * inventory[i].price);
+
+        cout << "If bill is finalized press (1) if not press (2)";
+        cin >> final;
+
+        if (final == 1)
+            break;
+
+    }
+
+    cout << "--------------------------------------------------------------------------------\n\n";
+    cout << "\nYour Total Bill is " << totalBill << " .Rs\n\n";
+    cout << "--------------------------------------------------------------------------------\n\n";
+
+}
+
+void viewItems(int itemCount)                                            // made by Azhan
 {
 
     if (itemCount == 0) {
@@ -269,15 +372,18 @@ void viewItems(int itemCount) // this functoin made by Azhan
 
 
 
-int menu() // Menu Function made by Azhan
+int menu()                                                //made by Azhan
 {
     int choice;
-    cout << "****************************************** MENU ****************************************** \n\n";
-    cout << "Press (1) to add items: \n";
-    cout << "Press (2) to delete items: \n";
-    cout << "Press (3) to edit items: \n";
-    cout << "Press (4) to view all items: \n";
-    cout << "Press (5) to Exit: \n";
+    cout << "========================================  MENU ======================================== \n\n";
+    cout << "Press (1) to add items \n";
+    cout << "Press (2) to delete items \n";
+    cout << "Press (3) to edit items \n";
+    cout << "Press (4) to view  items \n";
+    cout << "Press (5) to see notifications \n";
+    cout << "Press (6) to Enter sales management \n";
+    cout << "Press (7) to restock\n";
+    cout << "Press (8) to Exit \n";
 
     cout << "Your coice: ";
 
@@ -286,7 +392,7 @@ int menu() // Menu Function made by Azhan
 
         if (cin >> choice)
         {
-            if (choice > 5 || choice < 1) {
+            if (choice > 7 || choice < 1) {
                 cout << "Invalid Input!\n";
                 continue;
             }
@@ -362,23 +468,67 @@ int main()
         }
         case 4:
         {
-            viewItems(itemCount);
+            int view;
+            do {
+                cout << "===== VIEW MENU =====\n";
+                cout << "1. View list of all items\n";
+                cout << "2. Search product by ID\n";
+                cout << "Enter your choice (1 or 2): ";
+                if (cin >> view) {
+                    if (view == 1 || view == 2)
+                        break;
+                }
+                else {
+                    cin.clear();
+                    cin.ignore();
+                    cout << "Invalid input!" << endl;
+                }
+            } while (true);
+
+            if (view == 1) {
+                viewItems(itemCount);
+                break;
+            }
+            if (view == 2) {
+                searchItem(itemCount);
+                break;
+            }
             break;
+
         }
         case 5:
+        {
+            cout << "======== Notifications [*] ========" << endl;
+            cout << "stock related: " << endl;
+            preventNegStock(itemCount);
+            break;
+
+        }
+        case 6:
+        {
+            recordSALE(itemCount);
+            break;
+
+        }
+        case 7:
+        {
+          
+            // restock func
+        }
+        case 8:
         {
             cout << "Bye!";
             return 0;
         }
-
         }
 
         saveData(itemCount);
     }
 
-
+return 0;
 
 }
+
 
 
 
