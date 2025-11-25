@@ -625,6 +625,7 @@ int main()
         case 9:
         {
             cout << "Bye!";
+			saveData(itemCount);
             return 0;
         }
         }
@@ -635,6 +636,7 @@ int main()
     return 0;
 
 }
+
 
 
 
