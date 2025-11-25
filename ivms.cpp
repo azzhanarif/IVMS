@@ -3,13 +3,21 @@
 #include<string>
 #include<iomanip>
 using namespace std;
-struct Item {
+struct Item {                                        // Made by Azhan
     int id;
     string name;
     int quantity;
     float price;
     string category;
 };
+struct Sale {                                        // Made by Mufleh
+    int productID;
+	int quantitySold;
+	float totalPrice;
+};
+Sale sales[500];
+int saleCount = 0;
+
 
 Item inventory[100];
 fstream productFile;
@@ -45,7 +53,7 @@ void loadData(int& itemCount) {                                      // made by 
     productFile.open("products.txt", ios::in);
     if (productFile.is_open()) {
 
-        
+
         while (productFile >> inventory[itemCount].name >> inventory[itemCount].id >> inventory[itemCount].quantity >> inventory[itemCount].price >> inventory[itemCount].category) {
             itemCount++;
         }
@@ -252,10 +260,10 @@ void searchItem(int itemCount) {                                                
             found = true;
             break;
         }
-            
+
     }
 
-    if (found) 
+    if (found)
     {
         cout << "Item found! " << endl;
 
@@ -264,7 +272,7 @@ void searchItem(int itemCount) {                                                
         cout << "Item price: " << inventory[i].price << endl;
         cout << "Item qty: " << inventory[i].quantity << endl;
         cout << "Item category: " << inventory[i].category << endl;
-    
+
     }
     else {
         cout << "Item not not found!";
@@ -306,8 +314,8 @@ void recordSALE(int ItemCount) {                                        // Made 
         cin >> id;
 
         bool found = false;
-        for ( i = 0; i < ItemCount; i++) {  // This loop for determining item
-            if (inventory[i].id == id) { 
+        for (i = 0; i < ItemCount; i++) {  // This loop for determining item
+            if (inventory[i].id == id) {
                 found = true;
                 break;
             }
@@ -330,6 +338,11 @@ void recordSALE(int ItemCount) {                                        // Made 
 
 
         totalBill = totalBill + (qty * inventory[i].price);
+
+		sales[saleCount].productID = id;
+		sales[saleCount].quantitySold = qty;
+		sales[saleCount].totalPrice = qty * inventory[i].price;
+		saleCount++;
 
         cout << "If bill is finalized press (1) if not press (2)";
         cin >> final;
@@ -372,7 +385,7 @@ void viewItems(int itemCount)                                            // made
 
 
 
-int menu()                                                //made by Azhan
+int menu()                                                //made by Azhan and Mufleh
 {
     int choice;
     cout << "========================================  MENU ======================================== \n\n";
@@ -382,8 +395,9 @@ int menu()                                                //made by Azhan
     cout << "Press (4) to view  items \n";
     cout << "Press (5) to see notifications \n";
     cout << "Press (6) to Enter sales management \n";
-    cout << "Press (7) to restock\n";
-    cout << "Press (8) to Exit \n";
+    cout << "Press (7) for Reports and Statistics \n";
+    cout << "Press (8) to restock \n";
+	cout << "Press (9) to exit \n";
 
     cout << "Your coice: ";
 
@@ -409,6 +423,81 @@ int menu()                                                //made by Azhan
     } while (true);
 
     return choice;
+}
+void displaysAllSales() {               // Made by Mufleh
+    cout << "=============================== SALES RECORDS ===============================\n" << endl;
+    if (saleCount == 0) {
+        cout << "No sales recorded yet." << endl;
+        return;
+    }
+    for (int i = 0; i < saleCount; i++) {
+        cout << "Sale " << i + 1 << ":\n";
+        cout << "Product ID: " << sales[i].productID << endl;
+        cout << "Quantity Sold: " << sales[i].quantitySold << endl;
+        cout << "Total Price: " << sales[i].totalPrice << " Rs\n";
+        cout << "----------------------------------------\n";
+    }
+}
+
+void topSellingProduct() {          // Made by Mufleh
+    if (saleCount == 0) {
+        cout << "No sales recorded yet." << endl;
+        return;
+    }
+    int topIndex = 0;
+    for (int i = 1; i < saleCount; i++) {
+        if (sales[i].quantitySold > sales[topIndex].quantitySold) {
+            topIndex = i;
+        }
+    }
+    cout << "=============================== TOP SELLING PRODUCT ===============================\n" << endl;
+    cout << "Product ID: " << sales[topIndex].productID << endl;
+    cout << "Quantity Sold: " << sales[topIndex].quantitySold << endl;
+    cout << "Total Price: " << sales[topIndex].totalPrice << " Rs\n";
+    cout << "----------------------------------------\n";
+}
+
+void totalRevenue() {               // Made by Mufleh
+    float total = 0;
+    for (int i = 0; i < saleCount; i++) {
+        total += sales[i].totalPrice;
+    }
+    cout << "=============================== TOTAL REVENUE ===============================\n" << endl;
+    cout << "Total Revenue from Sales: " << total << " Rs\n";
+    cout << "----------------------------------------\n";
+}
+void restock(int itemCount) {       // Made by Mufleh
+			 
+	cout << "=============================== RESTOCK ITEMS ==============================\n" << endl;
+    if (itemCount == 0)
+    {
+        cout << "Inventory is empty! add items to restock\n";
+		return;
+    }
+    int id;
+    int qty;
+	cout << "Enter the product ID to restock: ";
+	cin >> id;
+	if (id < 0) {
+        cout << "Invalid Input! ID cannot be negative\n";
+        return;
+    }
+	if (id >= 0) {
+        for (int i = 0; i < itemCount; i++) {
+            if (inventory[i].id == id) {
+                cout << "Enter the quantity to add: ";
+                cin >> qty;
+                if (qty <= 0) {
+                    cout << "Invalid Input! Quantity must be positive\n";
+                    return;
+                }
+                inventory[i].quantity += qty;
+                cout << "Item with ID " << id << " restocked successfully! New quantity: " << inventory[i].quantity << "\n";
+                return;
+            }
+        }
+        cout << "Item with ID " << id << " not found!\n";
+    }
 }
 
 int main()
@@ -512,10 +601,28 @@ int main()
         }
         case 7:
         {
-          
-            // restock func
+            int rep;
+			cout << "===== REPORTS AND STATISTICS MENU =====\n";
+			cout << "1. View all sales records\n";
+			cout << "2. View top-selling product\n";    
+			cout << "3. View total revenue from sales\n";
+			cout << "Enter your choice (1, 2 or 3): ";
+            cin >> rep;
+            if(rep==1)
+                displaysAllSales();
+            else if(rep==2)
+                topSellingProduct();
+            else if(rep==3)
+                totalRevenue();
+            else
+				cout << "Invalid Input!";
+            break;
         }
         case 8:
+        {
+			restock(itemCount);
+        }
+        case 9:
         {
             cout << "Bye!";
             return 0;
@@ -525,10 +632,9 @@ int main()
         saveData(itemCount);
     }
 
-return 0;
+    return 0;
 
 }
-
 
 
 
