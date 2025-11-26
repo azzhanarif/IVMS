@@ -3,21 +3,21 @@
 #include<string>
 #include<iomanip>
 using namespace std;
-struct Item {                                        // Made by Azhan
+struct Item {
     int id;
     string name;
     int quantity;
     float price;
     string category;
 };
-struct Sale {                                        // Made by Mufleh
+
+struct Sale {                                        
     int productID;
-	int quantitySold;
-	float totalPrice;
+    int quantitySold;
+    float totalPrice;
 };
 Sale sales[500];
 int saleCount = 0;
-
 
 Item inventory[100];
 fstream productFile;
@@ -32,7 +32,7 @@ bool duplicateID(int ID, int itemCount) {            // made by Azhan
     }
     return false;
 }
-
+//--------------------------------------------------------------------------FILE I/0 AREA ------------------------------------------------------------------------------------
 void saveData(int itemCount) {                       // made by Azhan
 
     productFile.open("products.txt", ios::out);
@@ -53,7 +53,7 @@ void loadData(int& itemCount) {                                      // made by 
     productFile.open("products.txt", ios::in);
     if (productFile.is_open()) {
 
-
+        
         while (productFile >> inventory[itemCount].name >> inventory[itemCount].id >> inventory[itemCount].quantity >> inventory[itemCount].price >> inventory[itemCount].category) {
             itemCount++;
         }
@@ -62,6 +62,7 @@ void loadData(int& itemCount) {                                      // made by 
     }
 }
 
+//--------------------------------------------------------------------------inventory management------------------------------------------------------------------------
 
 void addItem(int& itemCount)                                           // made by Azhan
 {
@@ -172,6 +173,23 @@ void removeItem(int& itemCount)                                                 
         }
     } while (!correctid);
 
+ /*   int sure = 1;
+    cout << "Are you sure you want to delete this item? After you press (1) the whole stock of this item will be deleted!" << endl;
+    cout << "Press (2) if you want to take your decision back" << endl;
+    do {
+        if (!cin >> sure) {
+            cin.clear();
+            cin.ignore();
+            cout << "Invalid Input! " << endl;
+        }
+        else if (sure != 2 || sure != 1) {
+            cout << "Invalid Input! " << endl;
+        }
+        else
+            break;
+
+    } while (true);*/
+
 
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == tempID)
@@ -247,7 +265,7 @@ void editItem(int itemCount)                                                    
     getline(cin, inventory[index].category);
     cout << "\nItem updated successfully!\n";
 }
-
+//-------------------------------------------------------------------------- tracking ------------------------------------------------------------------------
 void searchItem(int itemCount) {                                                                        // made by Azhan
     int id;
     int i = 0;
@@ -260,10 +278,10 @@ void searchItem(int itemCount) {                                                
             found = true;
             break;
         }
-
+            
     }
 
-    if (found)
+    if (found) 
     {
         cout << "Item found! " << endl;
 
@@ -272,7 +290,7 @@ void searchItem(int itemCount) {                                                
         cout << "Item price: " << inventory[i].price << endl;
         cout << "Item qty: " << inventory[i].quantity << endl;
         cout << "Item category: " << inventory[i].category << endl;
-
+    
     }
     else {
         cout << "Item not not found!";
@@ -281,6 +299,41 @@ void searchItem(int itemCount) {                                                
 
 
 }
+
+void viewItems(int itemCount)                                            // made by Azhan
+{
+    if (itemCount == 0) {
+        cout << "Inventory is empty!" << endl;
+        return;
+    }
+
+    cout << "\n================================= ITEMS LIST =================================\n\n";
+
+    cout << left
+        << setw(10) << "Item#"
+        << setw(15) << "Category"
+        << setw(20) << "Name"
+        << setw(10) << "ID"
+        << setw(10) << "Qty"
+        << setw(10) << "Price"
+        << endl;
+
+    cout << "-------------------------------------------------------------------------------\n";
+
+    for (int i = 0; i < itemCount; i++) {
+        cout << left
+            << setw(10) << i + 1
+            << setw(15) << inventory[i].category
+            << setw(20) << inventory[i].name
+            << setw(10) << inventory[i].id
+            << setw(10) << inventory[i].quantity
+            << setw(10) << inventory[i].price
+            << endl;
+    }
+
+    cout << "-------------------------------------------------------------------------------\n";
+}
+
 
 void preventNegStock(int ic) {                     // made by Azhan
 
@@ -298,6 +351,42 @@ void preventNegStock(int ic) {                     // made by Azhan
     }
 }
 
+void restock(int itemCount) {       // Made by Mufleh
+
+    cout << "=============================== RESTOCK ITEMS ==============================\n" << endl;
+    if (itemCount == 0)
+    {
+        cout << "Inventory is empty! add items to restock\n";
+        return;
+    }
+    int id;
+    int qty;
+    cout << "Enter the product ID to restock: ";
+    cin >> id;
+    if (id < 0) {
+        cout << "Invalid Input! ID cannot be negative\n";
+        return;
+    }
+    if (id >= 0) {
+        for (int i = 0; i < itemCount; i++) {
+            if (inventory[i].id == id) {
+                cout << "Enter the quantity to add: ";
+                cin >> qty;
+                if (qty <= 0) {
+                    cout << "Invalid Input! Quantity must be positive\n";
+                    return;
+                }
+                inventory[i].quantity += qty;
+                cout << "Item with ID " << id << " restocked successfully! New quantity: " << inventory[i].quantity << "\n";
+                return;
+            }
+        }
+        cout << "Item with ID " << id << " not found!\n";
+    }
+}
+
+//--------------------------------------------------------------------------   SALES -------------------------------------------------------------------------------
+
 
 void recordSALE(int ItemCount) {                                        // Made by Azhan
 
@@ -311,11 +400,21 @@ void recordSALE(int ItemCount) {                                        // Made 
     while (true) {
 
         cout << "Enter the ID of the product you want to sell: ";
-        cin >> id;
+        do {
+            if (cin >> id) {
+                break;
+            }
+            else {
+                cin.clear();
+                cin.ignore();
+                cout << "Invalid input!" << endl;
+            }
+            
+        } while (true);
 
         bool found = false;
-        for (i = 0; i < ItemCount; i++) {  // This loop for determining item
-            if (inventory[i].id == id) {
+        for ( i = 0; i < ItemCount; i++) {  // This loop for determining item
+            if (inventory[i].id == id) { 
                 found = true;
                 break;
             }
@@ -327,7 +426,13 @@ void recordSALE(int ItemCount) {                                        // Made 
         }
 
         cout << "Enter the quantity of the item you want to sell: ";
-        cin >> qty; // add input validator
+        while (true) {
+            if (cin >> qty)
+                break;
+            else {
+                cout << "Invalid input ! enter again" << endl;
+            }
+        }
 
         if ((inventory[i].quantity - qty) < 0) {
             cout << "Invalid quantity! only " << inventory[i].quantity << " " << inventory[i].name << " are available in stock" << endl;
@@ -338,11 +443,6 @@ void recordSALE(int ItemCount) {                                        // Made 
 
 
         totalBill = totalBill + (qty * inventory[i].price);
-
-		sales[saleCount].productID = id;
-		sales[saleCount].quantitySold = qty;
-		sales[saleCount].totalPrice = qty * inventory[i].price;
-		saleCount++;
 
         cout << "If bill is finalized press (1) if not press (2)";
         cin >> final;
@@ -358,72 +458,8 @@ void recordSALE(int ItemCount) {                                        // Made 
 
 }
 
-void viewItems(int itemCount)                                            // made by Azhan
-{
+//--------------------------------------------------------------------------   STATS AND RECORD  -------------------------------------------------------------------------------
 
-    if (itemCount == 0) {
-        cout << "Inventory is empty! ";
-        return;
-    }
-
-    for (int i = 0; i < itemCount; i++) {
-        cout << "---------------------------------------------------------------------------------------------------";
-        cout << "\n\n";
-
-        cout << "                                   Item number " << i + 1 << endl;
-
-        cout << "Item name: " << inventory[i].name << endl;
-        cout << "Item id: " << inventory[i].id << endl;
-        cout << "Item price: " << inventory[i].price << endl;
-        cout << "Item qty: " << inventory[i].quantity << endl;
-        cout << "Item category: " << inventory[i].category << endl;
-
-        cout << "\n\n";
-    }
-
-}
-
-
-
-int menu()                                                //made by Azhan and Mufleh
-{
-    int choice;
-    cout << "========================================  MENU ======================================== \n\n";
-    cout << "Press (1) to add items \n";
-    cout << "Press (2) to delete items \n";
-    cout << "Press (3) to edit items \n";
-    cout << "Press (4) to view  items \n";
-    cout << "Press (5) to see notifications \n";
-    cout << "Press (6) to Enter sales management \n";
-    cout << "Press (7) for Reports and Statistics \n";
-    cout << "Press (8) to restock \n";
-	cout << "Press (9) to exit \n";
-
-    cout << "Your coice: ";
-
-    do
-    {
-
-        if (cin >> choice)
-        {
-            if (choice > 7 || choice < 1) {
-                cout << "Invalid Input!\n";
-                continue;
-            }
-            break;
-        }
-        else
-        {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid Input!\n";
-            continue;
-        }
-
-    } while (true);
-
-    return choice;
-}
 void displaysAllSales() {               // Made by Mufleh
     cout << "=============================== SALES RECORDS ===============================\n" << endl;
     if (saleCount == 0) {
@@ -466,176 +502,368 @@ void totalRevenue() {               // Made by Mufleh
     cout << "Total Revenue from Sales: " << total << " Rs\n";
     cout << "----------------------------------------\n";
 }
-void restock(int itemCount) {       // Made by Mufleh
-			 
-	cout << "=============================== RESTOCK ITEMS ==============================\n" << endl;
-    if (itemCount == 0)
+
+
+
+//--------------------------------------------------------------------------   MENUS -------------------------------------------------------------------------------
+
+
+int Mainmenu()                                                //made by Azhan
+{
+    int choice;
+    cout << "======================================================  MENU ======================================================  \n\n";
+    
+    cout << setw(40) << "(1)" << "  Product management\n";
+    cout << setw(40) << "(2)" << "  Inventory tracking\n";
+    cout << setw(40) << "(3)" << "  Sales management\n";
+    cout << setw(40) << "(4)" << "  Report and statistics\n";
+
+    cout << "\n+--------------------------------------------------------------------------------------------------------------+\n\n";
+
+    cout << "Your coice: ";
+
+    do
     {
-        cout << "Inventory is empty! add items to restock\n";
-		return;
-    }
-    int id;
-    int qty;
-	cout << "Enter the product ID to restock: ";
-	cin >> id;
-	if (id < 0) {
-        cout << "Invalid Input! ID cannot be negative\n";
-        return;
-    }
-	if (id >= 0) {
-        for (int i = 0; i < itemCount; i++) {
-            if (inventory[i].id == id) {
-                cout << "Enter the quantity to add: ";
-                cin >> qty;
-                if (qty <= 0) {
-                    cout << "Invalid Input! Quantity must be positive\n";
-                    return;
-                }
-                inventory[i].quantity += qty;
-                cout << "Item with ID " << id << " restocked successfully! New quantity: " << inventory[i].quantity << "\n";
-                return;
+
+        if (cin >> choice)
+        {
+            if (choice > 4 || choice < 1) {
+                cout << "Invalid Input!\n";
+                continue;
             }
+            break;
         }
-        cout << "Item with ID " << id << " not found!\n";
-    }
+        else
+        {
+            cin.clear();
+            cin.ignore();
+            cout << "Invalid Input!\n";
+            continue;
+        }
+
+    } while (true);
+
+    return choice;
 }
+int pmMenu() {
+    int choice;
+    cout << "=============================================== Product Mangement ==============================================  \n\n";
+
+    cout << setw(40) << "(1)" << "  Add Items\n";
+    cout << setw(40) << "(2)" << "  Delete Items\n";
+    cout << setw(40) << "(3)" << "  Edit Items\n";
+    cout << setw(40) << "(4)" << "  Exit\n";
+
+    cout << "\n+------------------------------------------------------------------------------------------------------------+\n\n";
+
+    cout << "Your coice: ";
+
+    do
+    {
+
+        if (cin >> choice)
+        {
+            if (choice > 5 || choice < 1) {
+                cout << "Invalid Input!\n";
+                continue;
+            }
+            break;
+        }
+        else
+        {
+            cin.clear();
+            cin.ignore();
+            cout << "Invalid Input!\n";
+            continue;
+        }
+
+    } while (true);
+
+    return choice;
+}
+
+int ITmenu() {
+
+    int choice;
+    cout << "=============================================== Inventory Tracking ==============================================  \n\n";
+
+    cout << setw(40) << "(1)" << "  View all products in stock\n";
+    cout << setw(40) << "(2)" << "  Search product by id or name\n";
+    cout << setw(40) << "(3)" << "  prevent negative stock\n";
+    cout << setw(40) << "(4)" << "  Restock\n";
+    cout << setw(40) << "(5)" << "  Exit\n";
+
+    cout << "\n+------------------------------------------------------------------------------------------------------------+\n\n";
+
+    cout << "Your coice: ";
+
+    do
+    {
+
+        if (cin >> choice)
+        {
+            if (choice > 5 || choice < 1) {
+                cout << "Invalid Input!\n";
+                continue;
+            }
+            break;
+        }
+        else
+        {
+            cin.clear();
+            cin.ignore();
+            cout << "Invalid Input!\n";
+            continue;
+        }
+
+    } while (true);
+
+    return choice;
+}
+
+int salesMenu() {
+
+    int choice;
+    cout << "=============================================== Sales Menu ==============================================  \n\n";
+
+    cout << setw(40) << "(1)" << "  Record sale\n";
+    cout << setw(40) << "(2)" << "  Exit\n";
+
+    cout << "\n+------------------------------------------------------------------------------------------------------------+\n\n";
+
+    cout << "Your coice: ";
+
+    do
+    {
+
+        if (cin >> choice)
+        {
+            if (choice > 2 || choice < 1) {
+                cout << "Invalid Input!\n";
+                continue;
+            }
+            break;
+        }
+        else
+        {
+            cin.clear();
+            cin.ignore();
+            cout << "Invalid Input!\n";
+            continue;
+        }
+
+    } while (true);
+
+    return choice;
+}
+
+int rsMenu() {
+
+    int choice;
+    cout << "=============================================== Reports & Stats ==============================================  \n\n";
+
+    cout << setw(40) << "(1)" << "  Display all sales made\n";
+    cout << setw(40) << "(2)" << "  Show top-selling product(s)\n";
+    cout << setw(40) << "(3)" << "  Display total revenue generated\n";
+    cout << setw(40) << "(4)" << "  Exit\n";
+
+    cout << "\n+------------------------------------------------------------------------------------------------------------+\n\n";
+
+    cout << "Your coice: ";
+
+    do
+    {
+
+        if (cin >> choice)
+        {
+            if (choice > 4 || choice < 1) {
+                cout << "Invalid Input!\n";
+                continue;
+            }
+            break;
+        }
+        else
+        {
+            cin.clear();
+            cin.ignore();
+            cout << "Invalid Input!\n";
+            continue;
+        }
+
+    } while (true);
+
+    return choice;
+}
+
+//--------------------------------------------------------------------------  MAIN  -------------------------------------------------------------------------------
 
 int main()
 {
-    cout << "****************************************** INVENTORY MANAGEMENT ******************************************\n\n" << endl;
+    cout << "****************************************** INVENTORY MANAGEMENT ******************************************\n\n";
 
     int itemCount = 0;
     loadData(itemCount);
 
     while (true)
     {
-        switch (menu())
+        system("cls");
+
+        switch (Mainmenu())
         {
+
         case 1:
         {
-            int k;
-            while (true) {
+            system("cls");
+
+            switch (pmMenu())
+            {
+            case 1:
+                system("cls");
                 addItem(itemCount);
-                cout << "Do you want to continue adding items or exit to menu? \n";
-                cout << "Press (1) for continue adding items and press (2)  to exit to main menu \n";
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
 
-                do {
+            case 2:
+                system("cls");
+                removeItem(itemCount);
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
 
-                    if (cin >> k)
-                        break;
-                    else
-                    {
-                        cin.clear();
-                        cin.ignore();
-                        cout << "Invalid Input!\n";
-                        continue;
-                    }
+            case 3:
+                system("cls");
+                editItem(itemCount);
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
 
-
-                } while (true);
-
-                if (k == 1)
-                {
-                    continue;
-                }
-                else
-                    break;
+            case 4:
+                
+                break;
             }
-
             break;
-
         }
+
+
         case 2:
         {
-            removeItem(itemCount);
+            system("cls");
+
+            switch (ITmenu())
+            {
+            case 1:
+                system("cls");
+                viewItems(itemCount);
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            case 2:
+                system("cls");
+                searchItem(itemCount);
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            case 3:
+                system("cls");
+                preventNegStock(itemCount);
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            case 4:
+                system("cls");
+                restock(itemCount);
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            case 5:
+                
+                break;
+            }
             break;
         }
+
+
         case 3:
         {
-            editItem(itemCount);
+            system("cls");
+
+            switch (salesMenu())
+            {
+            case 1:
+                system("cls");
+                recordSALE(itemCount);
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            case 2:
+                
+                break;
+            }
             break;
         }
+
+
         case 4:
         {
-            int view;
-            do {
-                cout << "===== VIEW MENU =====\n";
-                cout << "1. View list of all items\n";
-                cout << "2. Search product by ID\n";
-                cout << "Enter your choice (1 or 2): ";
-                if (cin >> view) {
-                    if (view == 1 || view == 2)
-                        break;
-                }
-                else {
-                    cin.clear();
-                    cin.ignore();
-                    cout << "Invalid input!" << endl;
-                }
-            } while (true);
+            system("cls");
 
-            if (view == 1) {
-                viewItems(itemCount);
-                break;
-            }
-            if (view == 2) {
-                searchItem(itemCount);
-                break;
-            }
-            break;
-
-        }
-        case 5:
-        {
-            cout << "======== Notifications [*] ========" << endl;
-            cout << "stock related: " << endl;
-            preventNegStock(itemCount);
-            break;
-
-        }
-        case 6:
-        {
-            recordSALE(itemCount);
-            break;
-
-        }
-        case 7:
-        {
-            int rep;
-			cout << "===== REPORTS AND STATISTICS MENU =====\n";
-			cout << "1. View all sales records\n";
-			cout << "2. View top-selling product\n";    
-			cout << "3. View total revenue from sales\n";
-			cout << "Enter your choice (1, 2 or 3): ";
-            cin >> rep;
-            if(rep==1)
+            switch (rsMenu())
+            {
+            case 1:
+                system("cls");
                 displaysAllSales();
-            else if(rep==2)
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            case 2:
+                system("cls");
                 topSellingProduct();
-            else if(rep==3)
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            case 3:
+                system("cls");
                 totalRevenue();
-            else
-				cout << "Invalid Input!";
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            case 4:
+                
+                break;
+            }
             break;
         }
-        case 8:
-        {
-			restock(itemCount);
-        }
-        case 9:
-        {
-            cout << "Bye!";
-			saveData(itemCount);
-            return 0;
-        }
+
+        default:
+            cout << "Invalid choice!";
         }
 
         saveData(itemCount);
     }
 
     return 0;
-
 }
+
 
 
 
