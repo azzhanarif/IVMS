@@ -9,18 +9,21 @@ struct Item {
     int quantity;
     float price;
     string category;
+    int quantitySold;
 };
 
-struct Sale {                                        
+struct Sale {
     int productID;
     int quantitySold;
     float totalPrice;
 };
-Sale sales[500];
-int saleCount = 0;
+
 
 Item inventory[100];
+Sale sales[1000];
+
 fstream productFile;
+fstream salesFile;
 
 bool duplicateID(int ID, int itemCount) {            // made by Azhan
 
@@ -39,7 +42,7 @@ void saveData(int itemCount) {                       // made by Azhan
     if (productFile.is_open()) {
 
         for (int i = 0; i < itemCount; i++) {
-            productFile << inventory[i].name << " " << inventory[i].id << " " << inventory[i].quantity << " " << inventory[i].price << " " << inventory[i].category << endl;
+            productFile << inventory[i].name << "\n" << inventory[i].id << "\n" << inventory[i].quantity << "\n" << inventory[i].price << "\n" << inventory[i].category << "\n" << inventory[i].quantitySold << endl;
 
         }
 
@@ -53,14 +56,57 @@ void loadData(int& itemCount) {                                      // made by 
     productFile.open("products.txt", ios::in);
     if (productFile.is_open()) {
 
-        
-        while (productFile >> inventory[itemCount].name >> inventory[itemCount].id >> inventory[itemCount].quantity >> inventory[itemCount].price >> inventory[itemCount].category) {
+        while (true) {
+
+            if (!getline(productFile, inventory[itemCount].name)) break;
+            productFile >> inventory[itemCount].id;
+            productFile >> inventory[itemCount].quantity;
+            productFile >> inventory[itemCount].price;
+            productFile.ignore(1000, '\n');
+
+            getline(productFile, inventory[itemCount].category);
+            productFile >> inventory[itemCount].quantitySold;
+            productFile.ignore(1000, '\n');
+
             itemCount++;
+
+
         }
+
 
         productFile.close();
     }
 }
+
+void saveSales(int saleCount) { // Made by Azhan
+
+    salesFile.open("sales.txt", ios::out);
+    if (salesFile.is_open()) {
+
+        for (int i = 0; i < saleCount; i++) {
+
+            salesFile << sales[i].productID << " " << sales[i].quantitySold << " " << sales[i].totalPrice << endl;
+
+        }
+
+        salesFile.close();
+    }
+
+}
+
+void loadSales(int& saleCount) { // Made by Azhan
+
+
+    salesFile.open("sales.txt", ios::in);
+    if (salesFile.is_open()) {
+
+        while (salesFile >> sales[saleCount].productID >> sales[saleCount].quantitySold >> sales[saleCount].totalPrice)
+            saleCount++;
+
+        salesFile.close();
+    }
+}
+
 
 //--------------------------------------------------------------------------inventory management------------------------------------------------------------------------
 
@@ -85,7 +131,7 @@ void addItem(int& itemCount)                                           // made b
         cin >> inventory[itemCount].id;
         if (cin.fail()) {
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
             cout << "Invalid Input! item ID must be in numbers " << endl;
         }
         else if (inventory[itemCount].id < 0)
@@ -103,10 +149,10 @@ void addItem(int& itemCount)                                           // made b
         cin >> inventory[itemCount].quantity;
         if (cin.fail()) {
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
             cout << "Invalid Input!" << endl;
         }
-        else if (inventory[itemCount].quantity >= 100 || inventory[itemCount].quantity <= 0)
+        else if (inventory[itemCount].quantity >= 10000 || inventory[itemCount].quantity <= 0)
         {
             cout << "Invalid Input! " << endl;
         }
@@ -120,7 +166,7 @@ void addItem(int& itemCount)                                           // made b
         cin >> inventory[itemCount].price;
         if (cin.fail()) {
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
             cout << "Invalid Input!: " << endl;
         }
         else if (inventory[itemCount].price <= 0)
@@ -135,7 +181,7 @@ void addItem(int& itemCount)                                           // made b
     getline(cin, inventory[itemCount].category);
 
 
-
+    inventory[itemCount].quantitySold = 0; // zero quantity sold for new item set by default
 
     itemCount++;
 
@@ -162,7 +208,7 @@ void removeItem(int& itemCount)                                                 
         if (!(cin >> tempID))
         {
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
             cout << "Invalid Input! ID must be a number\n";
             correctid = false;
         }
@@ -173,22 +219,22 @@ void removeItem(int& itemCount)                                                 
         }
     } while (!correctid);
 
- /*   int sure = 1;
-    cout << "Are you sure you want to delete this item? After you press (1) the whole stock of this item will be deleted!" << endl;
-    cout << "Press (2) if you want to take your decision back" << endl;
-    do {
-        if (!cin >> sure) {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid Input! " << endl;
-        }
-        else if (sure != 2 || sure != 1) {
-            cout << "Invalid Input! " << endl;
-        }
-        else
-            break;
+    /*   int sure = 1;
+       cout << "Are you sure you want to delete this item? After you press (1) the whole stock of this item will be deleted!" << endl;
+       cout << "Press (2) if you want to take your decision back" << endl;
+       do {
+           if (!cin >> sure) {
+               cin.clear();
+               cin.ignore();
+               cout << "Invalid Input! " << endl;
+           }
+           else if (sure != 2 || sure != 1) {
+               cout << "Invalid Input! " << endl;
+           }
+           else
+               break;
 
-    } while (true);*/
+       } while (true);*/
 
 
     for (int i = 0; i < itemCount; i++) {
@@ -270,18 +316,31 @@ void searchItem(int itemCount) {                                                
     int id;
     int i = 0;
     bool found = true;
-    cout << "Enter the product id: ";
-    cin >> id;
+    do {
+        cout << "Enter the product id: ";
+        if (cin >> id) {
+            if (id < 0) {
+                cout << "Id cannot be negative!" << endl;
+            }
+            else break;
+        }
+        else
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Invalid Input!" << endl;
+        }
+    } while (true);
 
     for (i = 0; i < itemCount; i++) {
         if (inventory[i].id == id) {
             found = true;
             break;
         }
-            
+
     }
 
-    if (found) 
+    if (found)
     {
         cout << "Item found! " << endl;
 
@@ -290,13 +349,11 @@ void searchItem(int itemCount) {                                                
         cout << "Item price: " << inventory[i].price << endl;
         cout << "Item qty: " << inventory[i].quantity << endl;
         cout << "Item category: " << inventory[i].category << endl;
-    
+
     }
     else {
         cout << "Item not not found!";
     }
-
-
 
 }
 
@@ -361,34 +418,52 @@ void restock(int itemCount) {       // Made by Mufleh
     }
     int id;
     int qty;
-    cout << "Enter the product ID to restock: ";
-    cin >> id;
-    if (id < 0) {
-        cout << "Invalid Input! ID cannot be negative\n";
-        return;
-    }
+
+    do {
+        cout << "Enter the product ID to restock: ";
+        if (cin >> id) {
+            if (id < 0) {
+                cout << "Id cannot be negative!" << endl;
+            }
+            else
+                break;
+        }
+        else
+            break;
+
+    } while (true);
+
+
     if (id >= 0) {
         for (int i = 0; i < itemCount; i++) {
             if (inventory[i].id == id) {
-                cout << "Enter the quantity to add: ";
-                cin >> qty;
-                if (qty <= 0) {
-                    cout << "Invalid Input! Quantity must be positive\n";
-                    return;
-                }
-                inventory[i].quantity += qty;
-                cout << "Item with ID " << id << " restocked successfully! New quantity: " << inventory[i].quantity << "\n";
-                return;
+                do {
+                    cout << "Enter the quantity you want to restock: ";
+                    if (cin >> id) {
+                        if (id < 0) {
+                            cout << "quantity cannot be negative!" << endl;
+                        }
+                        else
+                            break;
+                    }
+                    else
+                        break;
+
+                } while (true);
             }
+            inventory[i].quantity += qty;
+            cout << "Item with ID " << id << " restocked successfully! New quantity: " << inventory[i].quantity << "\n";
+            return;
         }
-        cout << "Item with ID " << id << " not found!\n";
     }
+    cout << "Item with ID " << id << " not found!\n";
+}
 }
 
-//--------------------------------------------------------------------------   SALES -------------------------------------------------------------------------------
+//--------------------------------------------------------------------------   SALES   -------------------------------------------------------------------------------
 
 
-void recordSALE(int ItemCount) {                                        // Made by Azhan
+void recordSALE(int ItemCount, int& salesCount) {                                        // Made by Azhan
 
     cout << "=============================== SALES Management ===============================\n" << endl;
 
@@ -409,12 +484,12 @@ void recordSALE(int ItemCount) {                                        // Made 
                 cin.ignore();
                 cout << "Invalid input!" << endl;
             }
-            
+
         } while (true);
 
         bool found = false;
-        for ( i = 0; i < ItemCount; i++) {  // This loop for determining item
-            if (inventory[i].id == id) { 
+        for (i = 0; i < ItemCount; i++) {  // This loop for determining item
+            if (inventory[i].id == id) {
                 found = true;
                 break;
             }
@@ -428,9 +503,16 @@ void recordSALE(int ItemCount) {                                        // Made 
         cout << "Enter the quantity of the item you want to sell: ";
         while (true) {
             if (cin >> qty)
-                break;
+            {
+                if (qty <= 0) {
+                    cout << "Invalid Quantity!" << endl;
+                }
+                else break;
+            }
             else {
-                cout << "Invalid input ! enter again" << endl;
+                cin.clear();
+                cin.ignore();
+                cout << "Invalid input ! enter again: " << endl;
             }
         }
 
@@ -440,6 +522,14 @@ void recordSALE(int ItemCount) {                                        // Made 
         }
 
         inventory[i].quantity -= qty;
+        sales[salesCount].productID = id;
+        sales[salesCount].quantitySold = qty;
+        sales[salesCount].totalPrice = qty * inventory[i].price;
+
+        // record for top selling product
+        inventory[i].quantitySold += qty;
+
+        salesCount++;
 
 
         totalBill = totalBill + (qty * inventory[i].price);
@@ -460,7 +550,7 @@ void recordSALE(int ItemCount) {                                        // Made 
 
 //--------------------------------------------------------------------------   STATS AND RECORD  -------------------------------------------------------------------------------
 
-void displaysAllSales() {               // Made by Mufleh
+void displaysAllSales(int saleCount) {               // Made by Mufleh
     cout << "=============================== SALES RECORDS ===============================\n" << endl;
     if (saleCount == 0) {
         cout << "No sales recorded yet." << endl;
@@ -475,25 +565,25 @@ void displaysAllSales() {               // Made by Mufleh
     }
 }
 
-void topSellingProduct() {          // Made by Mufleh
+void topSellingProduct(int saleCount, int itemCount) {          // Made by Azhan and Mufleh
     if (saleCount == 0) {
         cout << "No sales recorded yet." << endl;
         return;
     }
     int topIndex = 0;
-    for (int i = 1; i < saleCount; i++) {
-        if (sales[i].quantitySold > sales[topIndex].quantitySold) {
+    for (int i = 1; i < itemCount; i++) {
+        if (inventory[i].quantitySold > inventory[topIndex].quantitySold) {
             topIndex = i;
         }
     }
     cout << "=============================== TOP SELLING PRODUCT ===============================\n" << endl;
-    cout << "Product ID: " << sales[topIndex].productID << endl;
-    cout << "Quantity Sold: " << sales[topIndex].quantitySold << endl;
-    cout << "Total Price: " << sales[topIndex].totalPrice << " Rs\n";
+    cout << "Product ID: " << inventory[topIndex].id << endl;
+    cout << "Quantity Sold: " << inventory[topIndex].quantitySold << endl;
+    cout << "Total Price: " << inventory[topIndex].price * inventory[topIndex].quantitySold << " Rs\n";
     cout << "----------------------------------------\n";
 }
 
-void totalRevenue() {               // Made by Mufleh
+void totalRevenue(int saleCount) {               // Made by Mufleh
     float total = 0;
     for (int i = 0; i < saleCount; i++) {
         total += sales[i].totalPrice;
@@ -512,11 +602,13 @@ int Mainmenu()                                                //made by Azhan
 {
     int choice;
     cout << "======================================================  MENU ======================================================  \n\n";
-    
+
     cout << setw(40) << "(1)" << "  Product management\n";
     cout << setw(40) << "(2)" << "  Inventory tracking\n";
     cout << setw(40) << "(3)" << "  Sales management\n";
     cout << setw(40) << "(4)" << "  Report and statistics\n";
+    cout << setw(40) << "(5)" << "  Stocks related\n";
+    cout << setw(40) << "(6)" << "  Exit\n";
 
     cout << "\n+--------------------------------------------------------------------------------------------------------------+\n\n";
 
@@ -695,6 +787,46 @@ int rsMenu() {
     return choice;
 }
 
+int stocksMenu() {
+
+    int choice;
+    cout << "=============================================== Stocks Menu ==============================================  \n\n";
+
+    cout << setw(40) << "(1)" << "  See notification [*] \n";
+    cout << setw(40) << "(2)" << "  Restock\n";
+    cout << setw(40) << "(3)" << "  Exit\n";
+
+    cout << "\n+------------------------------------------------------------------------------------------------------------+\n\n";
+
+    cout << "Your coice: ";
+
+    do
+    {
+
+        if (cin >> choice)
+        {
+            if (choice > 3 || choice < 1) {
+                cout << "Invalid Input!\n";
+                continue;
+            }
+            break;
+        }
+        else
+        {
+            cin.clear();
+            cin.ignore();
+            cout << "Invalid Input!\n";
+            continue;
+        }
+
+    } while (true);
+
+    return choice;
+
+
+
+}
+
 //--------------------------------------------------------------------------  MAIN  -------------------------------------------------------------------------------
 
 int main()
@@ -702,7 +834,10 @@ int main()
     cout << "****************************************** INVENTORY MANAGEMENT ******************************************\n\n";
 
     int itemCount = 0;
+    int saleCount = 0;
+
     loadData(itemCount);
+    loadSales(saleCount);
 
     while (true)
     {
@@ -742,7 +877,7 @@ int main()
                 break;
 
             case 4:
-                
+
                 break;
             }
             break;
@@ -788,7 +923,7 @@ int main()
                 break;
 
             case 5:
-                
+
                 break;
             }
             break;
@@ -803,14 +938,14 @@ int main()
             {
             case 1:
                 system("cls");
-                recordSALE(itemCount);
+                recordSALE(itemCount, saleCount);
                 cout << "\nPress Enter to continue...";
                 cin.ignore();
                 cin.get();
                 break;
 
             case 2:
-                
+
                 break;
             }
             break;
@@ -825,7 +960,7 @@ int main()
             {
             case 1:
                 system("cls");
-                displaysAllSales();
+                displaysAllSales(saleCount);
                 cout << "\nPress Enter to continue...";
                 cin.ignore();
                 cin.get();
@@ -833,7 +968,7 @@ int main()
 
             case 2:
                 system("cls");
-                topSellingProduct();
+                topSellingProduct(saleCount, itemCount);
                 cout << "\nPress Enter to continue...";
                 cin.ignore();
                 cin.get();
@@ -841,28 +976,61 @@ int main()
 
             case 3:
                 system("cls");
-                totalRevenue();
+                totalRevenue(saleCount);
                 cout << "\nPress Enter to continue...";
                 cin.ignore();
                 cin.get();
                 break;
 
             case 4:
-                
+
                 break;
             }
             break;
+        }
+        case 5:
+        {
+            system("cls");
+            switch (stocksMenu()) {
+
+
+            case 1: {
+
+                system("cls");
+                preventNegStock();
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+            }
+            case 2: {
+
+                system("cls");
+                restock();
+                cout << "\nPress Enter to continue...";
+                cin.ignore();
+                cin.get();
+                break;
+
+            }
+
+            }
+
+            break;
+
         }
 
         default:
             cout << "Invalid choice!";
         }
 
+        saveSales(saleCount);
         saveData(itemCount);
     }
 
     return 0;
 }
+
 
 
 
