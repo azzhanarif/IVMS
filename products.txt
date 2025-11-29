@@ -1,0 +1,258 @@
+Coke 500ml
+101
+25
+180
+Soft Drink
+15
+Pepsi 1.5L
+102
+25
+250
+Soft Drink
+0
+Sprite Can
+103
+60
+140
+Soft Drink
+0
+Fanta Bottle
+104
+20
+160
+Soft Drink
+10
+7Up Regular
+105
+20
+150
+Soft Drink
+30
+Mountain Dew
+106
+32
+170
+Soft Drink
+0
+Red Bull Small
+107
+20
+320
+Energy Drink
+0
+Red Bull Large
+108
+10
+450
+Energy Drink
+0
+Sting Strawberry
+109
+45
+90
+Energy Drink
+0
+Gatorade Orange
+110
+25
+190
+Energy Drink
+0
+Oreo Original
+201
+40
+50
+Biscuits
+0
+Oreo Chocolate
+202
+35
+60
+Biscuits
+0
+Prince Biscuit
+203
+50
+40
+Biscuits
+0
+Twix Mini
+204
+28
+80
+Chocolate
+0
+KitKat 2 Finger
+205
+30
+70
+Chocolate
+0
+Snickers Bar
+206
+22
+100
+Chocolate
+0
+Mars Bar
+207
+18
+110
+Chocolate
+0
+Bounty Mini
+208
+15
+90
+Chocolate
+0
+Dairy Milk Small
+209
+25
+90
+Chocolate
+0
+Lays Masala
+301
+60
+50
+Chips
+0
+Lays French Cheese
+302
+55
+50
+Chips
+0
+Lays Salted
+303
+48
+50
+Chips
+0
+Kurleez Spicy
+304
+40
+40
+Chips
+0
+Kurleez Paprika
+305
+35
+40
+Chips
+0
+Oye Hoye BBQ
+306
+30
+30
+Chips
+0
+Oye Hoye Cheese
+307
+33
+30
+Chips
+0
+Pringles Original
+308
+20
+220
+Chips
+0
+Pringles Paprika
+309
+18
+220
+Chips
+0
+Nestle Water 500ml
+401
+80
+50
+Water
+0
+Nestle Water 1.5L
+402
+50
+90
+Water
+0
+Aquafina Small
+403
+70
+50
+Water
+0
+Aquafina Large
+404
+40
+90
+Water
+0
+Dasani Water
+405
+20
+60
+Water
+0
+Rafhan Jelly
+501
+25
+70
+Grocery
+0
+Shan Biryani
+502
+30
+120
+Grocery
+0
+Shan Nihari
+503
+28
+120
+Grocery
+0
+Shan Karahi
+504
+32
+120
+Grocery
+0
+Tapal Danedar Small
+505
+40
+90
+Grocery
+0
+Lipton Yellow Label
+506
+35
+100
+Grocery
+0
+Sugar 1kg
+507
+45
+160
+Grocery
+0
+Flour 5kg
+508
+20
+600
+Grocery
+0
+Cooking Oil 1L
+509
+28
+580
+Grocery
+2
+Salt 800g
+510
+55
+50
+Grocery
+0
