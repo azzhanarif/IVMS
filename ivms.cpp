@@ -1,4 +1,4 @@
-#include<iostream>
+    #include<iostream>
 #include<fstream>
 #include<string>
 #include<iomanip>
@@ -481,8 +481,11 @@ void restock(int itemCount) {       // Made by Mufleh and Azhan
     }
 
 }
-
-
+float applyDiscount(float price, float discountPercent) {    // Made by Mufleh
+    int discounted;
+    discounted = price * (1 - discountPercent / 100.0);;
+    return discounted;
+}
 //--------------------------------------------------------------------------   SALES   -------------------------------------------------------------------------------
 
 
@@ -504,7 +507,7 @@ void recordSALE(int ItemCount, int& salesCount) {                               
             }
             else {
                 cin.clear();
-                cin.ignore();
+                cin.ignore(1000,'\n');
                 cout << "Invalid input!" << endl;
             }
 
@@ -534,7 +537,7 @@ void recordSALE(int ItemCount, int& salesCount) {                               
             }
             else {
                 cin.clear();
-                cin.ignore();
+                cin.ignore(1000,'\n');
                 cout << "Invalid input ! enter again: " << endl;
             }
         }
@@ -543,6 +546,31 @@ void recordSALE(int ItemCount, int& salesCount) {                               
             cout << "Invalid quantity! only " << inventory[i].quantity << " " << inventory[i].name << " are available in stock" << endl;
             continue;
         }
+        //discount logic by Mufleh 
+        float discount= 0;
+        int apply;
+        cout << "Do You want To apply a discount to this item? [yes(1),No(2)]";
+        do
+        {
+            cin >> apply;
+        } while (apply != 1 && apply != 2);
+        if (apply == 1)
+        { 
+            do
+            {
+                cout << "Enter Discount % (0-100) :";
+                if (cin >> discount && discount >= 0 && discount <= 100)
+                    break;
+                else
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Invalid Input! enter between 0 to 100 only! " << endl;
+
+                }
+            } while (true);
+        }
+        discount = applyDiscount(inventory[i].price, discount);
 
         inventory[i].quantity -= qty;
         sales[salesCount].productID = id;
@@ -551,12 +579,10 @@ void recordSALE(int ItemCount, int& salesCount) {                               
 
         // record for top selling product
         inventory[i].quantitySold += qty;
-
         salesCount++;
 
-
-        totalBill = totalBill + (qty * inventory[i].price);
-
+        totalBill += qty * discount;
+        cout << "Discounted Price per item: " << discount << " Rs\n";
         cout << "If bill is finalized press (1) if not press (2)";
         cin >> final;
 
@@ -884,7 +910,7 @@ int main()
                     int x;
                     addItem(itemCount);
                     cout << "If you want to continue adding items Press (1) and if you want to exit press (2)\n";
-                    do{
+                    do {
 
                         if (cin >> x) {
                             if (!(x == 1 || x == 2))
@@ -897,7 +923,7 @@ int main()
                             cin.ignore(1000, '\n');
                             cout << "Ivalid Input" << endl;
                         }
-                                           
+
 
                     } while (true);
                     if (x == 1)
@@ -1089,7 +1115,6 @@ int main()
 
     return 0;
 }
-
 
 
 
